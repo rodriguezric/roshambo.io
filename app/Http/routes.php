@@ -1,5 +1,7 @@
 <?php
 
+use Illuminate\Support\Facades\Redis;
+use App\Events\UserSignedUp;
 /*
 |--------------------------------------------------------------------------
 | Application Routes
@@ -12,11 +14,8 @@
 */
 
 Route::get('/', function () {
+    event(new UserSignedUp(Request::query('name')));
     return view('welcome');
-});
-
-Route::get('/test', function () {
-    return "test";
 });
 
 
