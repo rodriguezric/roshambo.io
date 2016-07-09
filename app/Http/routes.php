@@ -18,6 +18,10 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+Route::get('/room', function () {
+    return view('room');
+});
+
 
 Route::auth();
 
