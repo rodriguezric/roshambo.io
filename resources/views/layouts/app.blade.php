@@ -72,12 +72,6 @@
         </div>
     </nav>
     
-    <h1>New Users</h1>
-
-    <ul>
-        <li v-for="user in users">@{{user}}</li>
-    </ul>
-
     @yield('content')
 
     <!-- JavaScripts -->
