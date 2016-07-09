@@ -85,21 +85,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/1.0.26/vue.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.4.8/socket.io.min.js"></script>
-    <script>
-        var socket = io('http://50.116.47.108:3000');
-        new Vue({
-            el: 'body',
-            data: {
-                users:[]
-            },
-
-            ready: function() {
-                socket.on('test-channel:App\\Events\\UserSignedUp', function(data) {
-                    this.users.push(data.username);
-                }.bind(this));
-            }
-        });
-    </script>
     {{-- <script src="{{ elixir('js/app.js') }}"></script> --}}
 </body>
 </html>

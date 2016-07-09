@@ -14,7 +14,7 @@ use App\Events\UserSignedUp;
 */
 
 Route::get('/', function () {
-    event(new UserSignedUp(Request::query('name')));
+    //event(new UserSignedUp(Request::query('name')));
     return view('welcome');
 });
 
