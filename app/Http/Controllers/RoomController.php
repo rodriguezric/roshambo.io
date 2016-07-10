@@ -12,13 +12,15 @@ class RoomController extends Controller
 {
     public function index()
     {
-        return view('room');
+        $rooms = Room::ListRooms(); 
+
+        return view('room')->with(compact('rooms'));
     }
 
     public function create(Request $request)
     {
-        $room = new Room;
-        $room->addRoom($request->name);
+        Room::AddRoom($request->name);
+
         return $request->name;
     }
 }

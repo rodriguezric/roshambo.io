@@ -11,7 +11,7 @@ class Room extends Model
      * Add a room to redis with name $name.
      * @param string $name Name of the room.
      **/
-    public function addRoom($name)
+    public static function AddRoom($name)
     {
         Redis::sadd('rooms', $name);
     }
@@ -20,7 +20,7 @@ class Room extends Model
      * Returns an array of rooms stored in redis.
      * @return array Array of room names.
      **/
-    public function listRooms()
+    public static function ListRooms()
     {
         return Redis::smembers('rooms');
     }
@@ -29,7 +29,7 @@ class Room extends Model
      * Removes room from redis with name $name.
      * @param string $name Name of room to remove.
      **/
-    public function removeRoom($name)
+    public static function RemoveRoom($name)
     {
         Redis::srem('rooms', $name);
     }
@@ -39,7 +39,7 @@ class Room extends Model
      * @param string $name Room name.
      * @return int 1 exists, 0 doesn't.
      **/
-    public function existsRoom($name)
+    public static function ExistsRoom($name)
     {
         return Redis::sismember('rooms', $name);
     }

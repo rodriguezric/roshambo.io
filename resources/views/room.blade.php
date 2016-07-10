@@ -6,9 +6,16 @@
         <div class="col-md-10 col-md-offset-1">
             <div class="panel panel-default">
                 <div class="panel-heading">Rooms</div>
-
                 <div class="panel-body">
-                    There currently no rooms.
+                    @if (count($rooms) === 0)
+                        There currently no rooms.
+                    @else
+                        <ul>
+                        @foreach ($rooms as $room)
+                            <li>{{ $room }}</li> 
+                        @endforeach
+                        </ul>
+                    @endif
                 </div>
             </div>
         </div>
@@ -18,16 +25,21 @@
 
 @section('scripts')
 <script>
-    var createRoom = function (name) {
+    var post = function (url, data, callback) {
         xhttp = new XMLHttpRequest();
-        xhttp.open("POST", "/api/room", true);
+        xhttp.open("POST", url, true);
         xhttp.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-        xhttp.onload = function () {
+        xhttp.onload = callback;
+        xhttp.send(data);
+    }
+
+    var createRoom = function (name) {
+        post("/api/room", 'name='+name, function (){
             console.log(this.responseText);
-        };
-        xhttp.send('name='+name);
+        });
     };
 
-    createRoom("testRoom");
+    createRoom("myOwn");
+
 </script>
 @endsection
