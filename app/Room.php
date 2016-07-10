@@ -8,16 +8,29 @@ use Illuminate\Database\Eloquent\Model;
 class Room extends Model
 {
     /**
-     * Create a room in Redis with name $name.
+     * Add a room to redis with name $name.
      * @param string $name Name of the room.
      **/
-    public function createRoom($name)
+    public function addRoom($name)
     {
         Redis::sadd('rooms', $name);
     }
     
+    /**
+     * Returns an array of rooms stored in redis.
+     * @return array Array of room names.
+     **/
     public function listRooms()
     {
         return Redis::smembers('rooms');
+    }
+
+    /**
+     * Removes room from redis with name $name.
+     * @param string $name Name of room to remove.
+     **/
+    public function removeRoom($name)
+    {
+        Redis::srem('rooms', $name);
     }
 }
