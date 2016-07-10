@@ -7,15 +7,11 @@
             <div class="panel panel-default">
                 <div class="panel-heading">Rooms</div>
                 <div class="panel-body">
-                    @if (count($rooms) === 0)
-                        There currently no rooms.
-                    @else
-                        <ul>
-                        @foreach ($rooms as $room)
-                            <li>{{ $room }}</li> 
-                        @endforeach
-                        </ul>
-                    @endif
+                    <ul v-if="rooms.length > 0">
+                        <li v-for="room in rooms">@{{room}}</li>
+                    </ul>
+                    
+                    <button class="btn" v-on:click="createRoom('A New Room')">Create Room</button>
                 </div>
             </div>
         </div>
@@ -25,21 +21,23 @@
 
 @section('scripts')
 <script>
-    var post = function (url, data, callback) {
-        xhttp = new XMLHttpRequest();
-        xhttp.open("POST", url, true);
-        xhttp.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-        xhttp.onload = callback;
-        xhttp.send(data);
-    }
+    var vue = new Vue({
+        el: 'body',
 
-    var createRoom = function (name) {
-        post("/api/room", 'name='+name, function (){
-            console.log(this.responseText);
-        });
-    };
+        data: {
+            rooms: {!! json_encode($rooms) !!}
+        },
 
-    createRoom("myOwn");
+        methods: {
+            createRoom: function (name) {
+                $.post("/api/room", function (data) {
+                    console.log(data);
+                    this.rooms.push(data);
+                }.bind(this));
+            }
+
+        }
+    });
 
 </script>
 @endsection

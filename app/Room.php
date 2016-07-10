@@ -44,4 +44,42 @@ class Room extends Model
         return Redis::sismember('rooms', $name);
     }
 
+    /**
+     * Creates a random string of 10 alphanumberic characters.
+     * This is to be used in conjunction with AddRandomRoom.
+     * @return string Random 10 character alphanumberic string.
+     **/
+    private static function RandomString() 
+    {
+        $alpha_only   = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        $alphanumeric = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+        return substr(str_shuffle($alpha_only),   0,  1) . 
+               substr(str_shuffle($alphanumeric), 0, 10);
+    }
+
+    /**
+     * Creates a random room name.
+     * @return string Room name.
+     **/
+    private static function RandomRoomName()
+    {
+        while (self::ExistsRoom($name = self::RandomString()));
+
+        return $name;
+    }
+
+    /**
+     * Creates a room with a random name.
+     * @return string Room name.
+     **/
+    public static function AddRandomRoom()
+    {
+        $name = self::RandomRoomName();
+
+        self::AddRoom($name);
+
+        return $name;
+    }
+
 }

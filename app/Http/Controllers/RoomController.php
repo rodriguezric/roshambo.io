@@ -19,8 +19,8 @@ class RoomController extends Controller
 
     public function create(Request $request)
     {
-        Room::AddRoom($request->name);
+        $name = Room::AddRandomRoom();
 
-        return $request->name;
+        return $name;
     }
 }
