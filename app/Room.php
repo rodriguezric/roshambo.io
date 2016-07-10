@@ -34,6 +34,11 @@ class Room extends Model
         Redis::srem('rooms', $name);
     }
 
+    /**
+     * Checks if a room already exists.
+     * @param string $name Room name.
+     * @return int 1 exists, 0 doesn't.
+     **/
     public function existsRoom($name)
     {
         return Redis::sismember('rooms', $name);
