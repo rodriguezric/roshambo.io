@@ -18,9 +18,12 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/room', function () {
-    return view('room');
-});
+
+
+Route::get('/room', 'RoomController@index');
+Route::post('/api/room', 'RoomController@create');
+
+
 
 
 Route::auth();

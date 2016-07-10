@@ -33,4 +33,10 @@ class Room extends Model
     {
         Redis::srem('rooms', $name);
     }
+
+    public function existsRoom($name)
+    {
+        return Redis::sismember('rooms', $name);
+    }
+
 }

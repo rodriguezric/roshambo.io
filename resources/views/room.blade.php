@@ -18,6 +18,16 @@
 
 @section('scripts')
 <script>
-    console.log("Testing");
+    var createRoom = function (name) {
+        xhttp = new XMLHttpRequest();
+        xhttp.open("POST", "/api/room", true);
+        xhttp.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+        xhttp.onload = function () {
+            console.log(this.responseText);
+        };
+        xhttp.send('name='+name);
+    };
+
+    createRoom("testRoom");
 </script>
 @endsection
