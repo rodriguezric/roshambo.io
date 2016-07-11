@@ -21,6 +21,9 @@ Route::get('/', function () {
 
 
 Route::get('/room', 'RoomController@index');
+
+Route::get('/room/{room_id}', 'RoomController@GameRoom');
+
 Route::post('/api/room', 'RoomController@create');
 
 
