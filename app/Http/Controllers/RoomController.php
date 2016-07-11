@@ -27,7 +27,7 @@ class RoomController extends Controller
     public function GameRoom($room)
     {
         if (Room::ExistsRoom($room)) {
-            return view('game.room');
+            return view('game.room')->with(compact('room'));
         }
         
         $rooms = Room::ListRooms(); 
