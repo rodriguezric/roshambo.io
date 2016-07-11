@@ -8,7 +8,9 @@
                 <div class="panel-heading">Rooms</div>
                 <div class="panel-body">
                     <ul v-if="rooms.length > 0">
-                        <li v-for="room in rooms">@{{room}}</li>
+                        <li v-for="room in rooms">
+                            <a href="/room/@{{room}}">@{{room}}</a>
+                        </li>
                     </ul>
                     
                     <button class="btn" v-on:click="createRoom('A New Room')">Create Room</button>
