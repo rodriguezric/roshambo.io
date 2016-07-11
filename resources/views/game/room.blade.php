@@ -8,8 +8,20 @@
                 <div class="panel-heading">Room: @{{room}}</div>
                 <div class="panel-body">
                     
-                    <button class="btn" v-on:click="sitdown(room, 1, '{{ Auth::user()->name }}')">Seat 1</button>
-                    <button class="btn" v-on:click="sitdown(room, 2, '{{ Auth::user()->name }}')">Seat 2</button>
+                    <button 
+                        class="btn" 
+                        v-if="seats.seat1 === null"
+                        v-on:click="sitdown(room, 1, '{{ Auth::user()->name }}')">
+                            Seat 1
+                    </button>
+                    <button v-else class="btn">@{{seats.seat1}}</button>
+                    <button 
+                        v-if="seats.seat2 === null"
+                        class="btn" 
+                        v-on:click="sitdown(room, 2, '{{ Auth::user()->name }}')">
+                            Seat 2
+                    </button>
+                    <button v-else class="btn">@{{seats.seat2}}</button>
                 </div>
             </div>
         </div>
@@ -45,10 +57,12 @@
             }
         },
         ready: function () {
-            console.log("This is ready");
+            $.getJSON('/api/room/'+this.room+'/seats', function(data) {
+                this.seats = data;
+            }.bind(this));
             socket.on('game-channel:App\\Events\\Sitdown', function(data) {
                 console.log(data);
-                this.seats[data.seat] = data.user;
+                this.seats['seat'+data.seat] = data.user;
             }.bind(this));
         }
     });
