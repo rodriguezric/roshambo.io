@@ -20,11 +20,12 @@ Route::get('/', function () {
 
 
 Route::get('/room', 'RoomController@index');
+Route::get('/room/{room}', 'RoomController@GameRoom');
 
-Route::get('/room/{room_id}', 'RoomController@GameRoom');
+//API
+Route::get('/api/room/{room}/seats', 'SeatController@retrieve');
 
 Route::post('/api/room', 'RoomController@create');
-
 Route::post('/api/room/sitdown', 'RoomController@SitDown');
 
 

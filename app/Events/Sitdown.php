@@ -2,6 +2,7 @@
 
 namespace App\Events;
 
+use App\Seat;
 use App\Events\Event;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
@@ -24,6 +25,8 @@ class Sitdown extends Event implements ShouldBroadcast
         $this->room = $room;
         $this->seat = $seat;
         $this->user = $user;
+
+        Seat::SitDown($room, $seat, $user);
     }
 
     /**

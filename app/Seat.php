@@ -27,7 +27,7 @@ class Seat extends Model
      * @param string $seat Number of the seat. (1 or 2)
      * @param string $user Name of the user.
      **/
-    public static function Sitdown($room, $seat, $user)
+    public static function SitDown($room, $seat, $user)
     {
         Redis::set($room.':'.$seat, $user);
     }
@@ -37,7 +37,7 @@ class Seat extends Model
      * @param string $room Room name.
      * @param string $seat Number of the seat. (1 or 2)
      **/
-    public static function Standup($room, $seat)
+    public static function StandUp($room, $seat)
     {
         Redis::del($room.':'.$seat);
     }
