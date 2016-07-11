@@ -8,8 +8,8 @@
                 <div class="panel-heading">Room: @{{room}}</div>
                 <div class="panel-body">
                     
-                    <button class="btn">Seat 1</button>
-                    <button class="btn">Seat 2</button>
+                    <button class="btn" v-on:click="sitdown(room, 1)">Seat 1</button>
+                    <button class="btn" v-on:click="sitdown(room, 2)">Seat 2</button>
                 </div>
             </div>
         </div>
@@ -19,15 +19,36 @@
 
 @section('scripts')
 <script>
+    var socket = io('http://50.116.47.108:3000');
+
     var vue = new Vue({
         el: 'body',
 
         data: {
-            room: '{{$room}}'
+            room: '{{$room}}',
+            seats: []
         },
 
         methods: {
-
+            sitdown: function(room, seat) {
+                $.ajax({
+                    type: "POST",
+                    url:  "/api/room/sitdown",
+                    data: {
+                        room: room,
+                        seat: seat
+                    },
+                    success: function(data) {
+                        console.log(data);
+                    }
+                });
+            }
+        },
+        ready: function () {
+            socket.on('message', function(data) {
+                data = JSON.parse(data);
+                console.log(data);
+            }.bind(this));
         }
     });
 

@@ -1,7 +1,6 @@
 <?php
 
 use Illuminate\Support\Facades\Redis;
-use App\Events\UserSignedUp;
 /*
 |--------------------------------------------------------------------------
 | Application Routes
@@ -25,6 +24,8 @@ Route::get('/room', 'RoomController@index');
 Route::get('/room/{room_id}', 'RoomController@GameRoom');
 
 Route::post('/api/room', 'RoomController@create');
+
+Route::post('/api/room/sitdown', 'RoomController@SitDown');
 
 
 

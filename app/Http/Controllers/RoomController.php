@@ -8,6 +8,8 @@ use App\Http\Requests;
 
 use App\Room;
 
+use App\Events\Sitdown;
+
 class RoomController extends Controller
 {
     public function index()
@@ -33,5 +35,11 @@ class RoomController extends Controller
         $rooms = Room::ListRooms(); 
 
         return view('room')->with(compact('rooms'));
+    }
+
+    public function Sitdown(Request $request) 
+    {
+        event(new Sitdown($request->room, $request->seat));
+        return $request;
     }
 }
