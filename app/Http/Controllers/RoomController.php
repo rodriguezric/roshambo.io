@@ -9,7 +9,8 @@ use App\Http\Requests;
 use App\Room;
 use App\Seat;
 
-use App\Events\Sitdown;
+use App\Events\SitDown;
+use App\Events\StandUp;
 
 class RoomController extends Controller
 {
@@ -43,9 +44,15 @@ class RoomController extends Controller
         return view('room')->with(compact('rooms'));
     }
 
-    public function Sitdown(Request $request) 
+    public function SitDown(Request $request) 
     {
-        event(new Sitdown($request->room, $request->seat, $request->user));
+        event(new SitDown($request->room, $request->seat, $request->user));
+        return $request;
+    }
+
+    public function StandUp(Request $request) 
+    {
+        event(new StandUp($request->room, $request->seat, $request->user));
         return $request;
     }
 }

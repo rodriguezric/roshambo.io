@@ -7,11 +7,12 @@ use App\Events\Event;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 
-class Sitdown extends Event implements ShouldBroadcast
+class StandUp extends Event implements ShouldBroadcast
 {
     public $room;
     public $seat;
     public $user;
+    public $result;
 
     use SerializesModels;
 
@@ -26,7 +27,7 @@ class Sitdown extends Event implements ShouldBroadcast
         $this->seat = $seat;
         $this->user = $user;
 
-        Seat::SitDown($room, $seat, $user);
+        $this->result = Seat::StandUp($room, $seat, $user);
     }
 
     /**

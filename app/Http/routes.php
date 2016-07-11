@@ -27,6 +27,7 @@ Route::get('/api/room/{room}/seats', 'SeatController@retrieve');
 
 Route::post('/api/room', 'RoomController@create');
 Route::post('/api/room/sitdown', 'RoomController@SitDown');
+Route::post('/api/room/standup', 'RoomController@StandUp');
 
 
 

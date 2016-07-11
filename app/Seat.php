@@ -7,14 +7,18 @@ use Illuminate\Database\Eloquent\Model;
 
 class Seat extends Model
 {
+    private static function GetSeat($room, $seat)
+    {
+        return Redis::get($room.':'.$seat);
+    }
     /**
      * List all seats for room name $room.
      * @param string $room Room name
      **/
     public static function ListSeats($room)
     {
-        $seat1 = Redis::get($room.':'.'1');
-        $seat2 = Redis::get($room.':'.'2');
+        $seat1 = self::GetSeat($room,1);
+        $seat2 = self::GetSeat($room,2);
         $seats = compact('seat1', 'seat2');
 
         return $seats;
@@ -33,12 +37,18 @@ class Seat extends Model
     }
 
     /**
-     * Frees the seat $seat in room $room.
+     * Frees the seat $seat in room $room if the user
+     * matches the one in the seat.
      * @param string $room Room name.
      * @param string $seat Number of the seat. (1 or 2)
+     * @return bool Result if the standup was successful.
      **/
-    public static function StandUp($room, $seat)
+    public static function StandUp($room, $seat, $user)
     {
-        Redis::del($room.':'.$seat);
+        if ($user === self::GetSeat($room, $seat)) {
+            Redis::del($room.':'.$seat);
+            return true;
+        }
+        return false;
     }
 }
