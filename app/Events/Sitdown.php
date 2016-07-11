@@ -10,6 +10,7 @@ class Sitdown extends Event implements ShouldBroadcast
 {
     public $room;
     public $seat;
+    public $user;
 
     use SerializesModels;
 
@@ -18,10 +19,11 @@ class Sitdown extends Event implements ShouldBroadcast
      *
      * @return void
      */
-    public function __construct($room, $seat)
+    public function __construct($room, $seat, $user)
     {
         $this->room = $room;
         $this->seat = $seat;
+        $this->user = $user;
     }
 
     /**

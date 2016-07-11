@@ -8,8 +8,8 @@
                 <div class="panel-heading">Room: @{{room}}</div>
                 <div class="panel-body">
                     
-                    <button class="btn" v-on:click="sitdown(room, 1)">Seat 1</button>
-                    <button class="btn" v-on:click="sitdown(room, 2)">Seat 2</button>
+                    <button class="btn" v-on:click="sitdown(room, 1, '{{ Auth::user()->name }}')">Seat 1</button>
+                    <button class="btn" v-on:click="sitdown(room, 2, '{{ Auth::user()->name }}')">Seat 2</button>
                 </div>
             </div>
         </div>
@@ -30,12 +30,13 @@
         },
 
         methods: {
-            sitdown: function(room, seat) {
+            sitdown: function(room, seat, user) {
                 $.ajax({
                     type: "POST",
                     url:  "/api/room/sitdown",
                     data: {
                         room: room,
+                        user: user,
                         seat: seat
                     },
                     success: function(data) {
@@ -47,7 +48,7 @@
             console.log("This is ready");
             socket.on('game-channel:App\\Events\\Sitdown', function(data) {
                 console.log(data);
-                console.log(data.room);
+                this.seats[data.seat] = data.user;
             }.bind(this));
         }
     });

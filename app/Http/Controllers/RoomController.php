@@ -44,7 +44,7 @@ class RoomController extends Controller
 
     public function Sitdown(Request $request) 
     {
-        event(new Sitdown($request->room, $request->seat));
+        event(new Sitdown($request->room, $request->seat, $request->user));
         return $request;
     }
 }
