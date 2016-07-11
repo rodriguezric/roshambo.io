@@ -39,15 +39,15 @@
                         seat: seat
                     },
                     success: function(data) {
-                        console.log(data);
                     }
                 });
             }
         },
         ready: function () {
-            socket.on('message', function(data) {
-                data = JSON.parse(data);
+            console.log("This is ready");
+            socket.on('game-channel:App\\Events\\Sitdown', function(data) {
                 console.log(data);
+                console.log(data.room);
             }.bind(this));
         }
     });
