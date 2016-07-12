@@ -17,8 +17,8 @@ class Seat extends Model
      **/
     public static function ListSeats($room)
     {
-        $seat1 = self::GetSeat($room,1);
-        $seat2 = self::GetSeat($room,2);
+        $seat1 = self::GetSeat($room, 1);
+        $seat2 = self::GetSeat($room, 2);
         $seats = compact('seat1', 'seat2');
 
         return $seats;
