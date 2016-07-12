@@ -7,25 +7,25 @@ use Illuminate\Database\Eloquent\Model;
 
 class Attack extends Model
 {
-    public static function GetAttack($room, $seat) 
+    public static function get($room, $seat) 
     {
         return Redis::get($room.':'.$seat.':attack');
     }
 
-    public static function SetAttack($room, $seat, $attack)
+    public static function set($room, $seat, $attack)
     {
         Redis::set($room.':'.$seat.':attack', $attack);
     }
 
-    public static function DeleteAttack($room, $seat)
+    public static function delete($room, $seat)
     {
         Redis::del($room.':'.$seat.':attack');
     }
 
-    public static function ListAttacks($room)
+    public static function list($room)
     {
-        $attack1 = self::GetAttack($room, 1);
-        $attack2 = self::GetAttack($room, 2);
+        $attack1 = self::get($room, 1);
+        $attack2 = self::get($room, 2);
         $attacks = compact('attack1', 'attack2');
 
         return $attacks
