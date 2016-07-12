@@ -24,6 +24,12 @@ class Seat extends Model
         return $seats;
     }
 
+    private static function NotSittingInRoom($room, $user)
+    {
+        $seats = self::ListSeats($room);
+        return $seats['seat1'] != $user && $seats['seat2'] != $user;
+    }
+
     /**
      * User $user sits down in room $room on
      * seat $seat.
@@ -33,7 +39,11 @@ class Seat extends Model
      **/
     public static function SitDown($room, $seat, $user)
     {
-        Redis::set($room.':'.$seat, $user);
+        if (self::NotSittingInRoom($room,$user)) {
+            Redis::set($room.':'.$seat, $user);
+            return true;
+        }
+        return false;
     }
 
     /**

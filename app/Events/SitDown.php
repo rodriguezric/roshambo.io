@@ -12,6 +12,7 @@ class SitDown extends Event implements ShouldBroadcast
     public $room;
     public $seat;
     public $user;
+    public $result;
 
     use SerializesModels;
 
@@ -26,7 +27,7 @@ class SitDown extends Event implements ShouldBroadcast
         $this->seat = $seat;
         $this->user = $user;
 
-        Seat::SitDown($room, $seat, $user);
+        $this->result = Seat::SitDown($room, $seat, $user);
     }
 
     /**
