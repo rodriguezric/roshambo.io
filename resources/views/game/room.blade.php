@@ -41,7 +41,47 @@
                     </button>
 
                 </div>
+
             </div>
+            
+            <div    
+                v-if="gameready()"
+                class="panel panel-default"
+            >
+                <div class="panel-heading">Battle: @{{seats.seat1}} vs @{{seats.seat2}}</div>
+                <div class="panel-body">
+                    <div class="col-md-4">
+                        <pre>
+@{{seats.seat1}}
+****************
+HP: 3/3
+                        </pre>
+                    </div>                    
+                    <div class="col-md-4">
+                        <div class="text-center center-block">
+                            <h4>Choose your attack:</h4> 
+                            <button class="btn btn-lg btn-danger">
+                                <span class="glyphicon glyphicon-fire"></span>
+                            </button>
+                            <button class="btn btn-lg btn-primary">
+                                <span class="glyphicon glyphicon-tint"></span>
+                            </button>
+                            <button class="btn btn-lg btn-success">
+                                <span class="glyphicon glyphicon-leaf"></span>
+                            </button>
+                        </div>
+                    </div>                    
+                    <div class="col-md-4">
+                        <pre>
+@{{seats.seat2}}
+****************
+HP: 3/3
+                        </pre>
+                    </div>                    
+
+                </div>
+            </div>
+
         </div>
     </div>
 </div>
@@ -86,7 +126,13 @@
                     success: function(data) {
                     }
                 });
-            }
+            },
+            gameready: function () {
+                return this.seats.seat1 != null &&
+                       this.seats.seat2 != null &&
+                      (this.user === this.seats.seat1 ||
+                       this.user === this.seats.seat2) 
+            } 
         },
         ready: function () {
             $.getJSON('/api/room/'+this.room+'/seats', function(data) {
