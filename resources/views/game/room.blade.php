@@ -5,6 +5,7 @@
     <div class="row">
         <div class="col-md-10 col-md-offset-1">
             <div class="panel panel-default">
+                {{ //Seats Section }}
                 <div class="panel-heading">Room: @{{room}}</div>
                 <div class="panel-body">
                     
@@ -44,6 +45,7 @@
 
             </div>
 
+            {{ //Game State }}
             <div    
                 v-show="bothsitting() && !gameready()"
                 class="panel panel-default"
@@ -136,7 +138,9 @@ HP: 3/3
         },
 
         methods: {
-            //Functions for actions
+            /*************************
+             * Functions for actions *
+             *************************/
             sitdown: function(room, seat, user) {
                 $.ajax({
                     type: "POST",
@@ -204,7 +208,9 @@ HP: 3/3
                 return this.ready['ready'+opponent];
             },
 
-            //Functions for determining state
+            /***********************************
+             * Functions for determining state *
+             ***********************************/
             bothsitting: function () {
                 return this.seats.seat1 != null &&
                        this.seats.seat2 != null &&
@@ -217,6 +223,9 @@ HP: 3/3
             }
         },
         ready: function () {
+            /*******************
+             * Initialize Data *
+             *******************/
             $.getJSON('/api/room/'+this.room+'/seats', function(data) {
                 this.seats = data;
             }.bind(this));
@@ -226,6 +235,9 @@ HP: 3/3
                 this.ready = data;
             }.bind(this));
 
+            /***********
+             * Sockets *
+             ***********/
             socket.on('game-channel:App\\Events\\SitDown', function(data) {
                 console.log(data);
                 if (data.result === true) {
