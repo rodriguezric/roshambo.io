@@ -6,7 +6,7 @@ use App\Events\Event;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 
-class EndBattle extends Event
+class EndBattle extends Event implements ShouldBroadcast
 {
     use SerializesModels;
 

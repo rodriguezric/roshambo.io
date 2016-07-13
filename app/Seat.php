@@ -11,6 +11,7 @@ class Seat extends Model
     {
         return Redis::get($room.':'.$seat);
     }
+
     /**
      * List all seats for room name $room.
      * @param string $room Room name
