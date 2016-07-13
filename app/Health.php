@@ -17,7 +17,7 @@ class Health extends Model
         Redis::set($room.':'.$seat.':health', $health);
     }
 
-    public static function delete($room, $seat)
+    public static function DeleteHealth($room, $seat)
     {
         Redis::del($room.':'.$seat.':health');
     }
@@ -28,6 +28,6 @@ class Health extends Model
         $health2 = self::get($room, 2);
         $healths = compact('health1', 'health2');
 
-        return $healths
+        return $healths;
     }
 }

@@ -25,6 +25,13 @@ Route::get('/room/{room}', 'RoomController@GameRoom');
 //API
 Route::get('/api/room/{room}/seats', 'SeatController@retrieve');
 
+Route::get('/api/room/{room}/ready', 'BattleController@ready');
+Route::get('/api/room/{room}/battle', 'BattleController@battle');
+
+Route::get('/api/room/{room}/attack', 'AttackController@list');
+Route::get('/api/room/{room}/health', 'HealthController@list');
+
+
 Route::post('/api/room', 'RoomController@create');
 Route::post('/api/room/sitdown', 'RoomController@SitDown');
 Route::post('/api/room/standup', 'RoomController@StandUp');

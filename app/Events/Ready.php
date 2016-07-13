@@ -27,6 +27,6 @@ class Ready extends Event
      */
     public function broadcastOn()
     {
-        return [];
+        return ['game-channel'];
     }
 }

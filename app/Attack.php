@@ -17,7 +17,7 @@ class Attack extends Model
         Redis::set($room.':'.$seat.':attack', $attack);
     }
 
-    public static function delete($room, $seat)
+    public static function deleteAttack($room, $seat)
     {
         Redis::del($room.':'.$seat.':attack');
     }
@@ -28,7 +28,7 @@ class Attack extends Model
         $attack2 = self::get($room, 2);
         $attacks = compact('attack1', 'attack2');
 
-        return $attacks
+       return $attacks;
     }
 
     

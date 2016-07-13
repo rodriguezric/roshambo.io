@@ -30,17 +30,25 @@ class Battle extends Model
 
     public static function IsBattleInRoom($room)
     {
-        return Redis::get($room.':battle');
+        $response =  Redis::get($room.':battle');
+        return compact('response');
     }
 
     public static function SetReady($room, $seat)
     {
-        Redis::set($room.':'.$seat.':attack', 1);
+        Redis::set($room.':'.$seat.':ready', 1);
     }
 
     public static function SetNotReady($room, $seat)
     {
-        Redis::del($room.':'.$seat.':attack');
+        Redis::del($room.':'.$seat.':ready');
+    }
+
+    public static function GetReady($room)
+    {
+        $response = Redis::get($room.':1:ready') &&
+                    Redis::get($room.':2:ready');     
+        return compact('response');
     }
 
 }
