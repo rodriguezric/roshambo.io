@@ -8,6 +8,10 @@ use App\Events\Event;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 
+/**
+ * This event represents when a user clicks the
+ * ready button after sitting down in a seat.
+ **/
 class Ready extends Event implements ShouldBroadcast
 {
     use SerializesModels;
