@@ -46,9 +46,10 @@ class Battle extends Model
 
     public static function GetReady($room)
     {
-        $response = Redis::get($room.':1:ready') &&
-                    Redis::get($room.':2:ready');     
-        return compact('response');
+        $ready1 = Redis::get($room.':1:ready');
+        $ready2 = Redis::get($room.':2:ready');     
+
+        return compact('ready1', 'ready2');
     }
 
 }

@@ -10,7 +10,7 @@
                     
                     <button 
                         class="btn" 
-                        v-if="seats.seat1 === null"
+                        v-show="seats.seat1 === null"
                         v-on:click="sitdown(room, 1, user)"
                     >
                         Seat 1
@@ -25,7 +25,7 @@
                     </button>
                     
                     <button 
-                        v-if="seats.seat2 === null"
+                        v-show="seats.seat2 === null"
                         class="btn pull-right" 
                         v-on:click="sitdown(room, 2, user)"
                     >
@@ -43,9 +43,43 @@
                 </div>
 
             </div>
+
+            <div    
+                v-show="bothsitting() && !gameready()"
+                class="panel panel-default"
+            >
+                <div class="panel-heading">Battle: @{{seats.seat1}} vs @{{seats.seat2}}</div>
+                <div class="panel-body">
+                    <div class="col-md-4">
+                    </div>                    
+                    <div class="col-md-4">
+                        <div class="text-center center-block">
+                            <div v-show="!iAmReady()">
+                                <h4>Click to Start Battle</h4> 
+                                <button 
+                                    class="btn btn-lg btn-primary"
+                                    v-on:click="clickReady()"
+                                >
+                                    Start Match
+                                </button>
+                                <h4 v-show="opponentIsReady()">
+                                    Opponent is waiting for you!
+                                </h4>
+                            </div>
+                            <div v-show="iAmReady() && !opponentIsReady()">
+                                <h4>Waiting for Opponent.</h4>
+                            </div>
+                        </div>
+                    </div>                    
+                    <div class="col-md-4">
+                    </div>                    
+
+                </div>
+            </div>
+
             
             <div    
-                v-if="gameready()"
+                v-show="gameready()"
                 class="panel panel-default"
             >
                 <div class="panel-heading">Battle: @{{seats.seat1}} vs @{{seats.seat2}}</div>
@@ -97,10 +131,12 @@ HP: 3/3
         data: {
             room: '{{$room}}',
             user: '{{ Auth::user()->name }}',
-            seats: []
+            seats: [],
+            ready: []
         },
 
         methods: {
+            //Functions for actions
             sitdown: function(room, seat, user) {
                 $.ajax({
                     type: "POST",
@@ -127,16 +163,67 @@ HP: 3/3
                     }
                 });
             },
-            gameready: function () {
+            clickReady: function() {
+                var dbug =  {
+                        room: this.room,
+                        seat: this.getSeat()
+                };
+                console.log(dbug);
+                $.ajax({
+                    type: "POST",
+                    url: "/api/room/ready",
+                    data: {
+                        room: this.room,
+                        seat: this.getSeat()
+                    }
+                });
+            },
+
+            //Helper function for finding seat #
+            getSeat: function () {
+                var seat = false;
+
+                if (this.seats.seat1 === this.user) {
+                    seat = 1;
+                }
+
+                if (this.seats.seat2 === this.user) {
+                    seat = 2;
+                }
+
+                return seat;
+            },
+            iAmReady: function () {
+                return this.ready['ready'+this.getSeat()];
+            },
+            opponentIsReady: function () {
+                opponent = 1;
+                if (opponent === this.getSeat()) {
+                    opponent = 2;
+                }
+                return this.ready['ready'+opponent];
+            },
+
+            //Functions for determining state
+            bothsitting: function () {
                 return this.seats.seat1 != null &&
                        this.seats.seat2 != null &&
                       (this.user === this.seats.seat1 ||
                        this.user === this.seats.seat2) 
-            } 
+            },
+            gameready: function () {
+                return this.ready.ready1 && 
+                       this.ready.ready2;
+            }
         },
         ready: function () {
             $.getJSON('/api/room/'+this.room+'/seats', function(data) {
                 this.seats = data;
+            }.bind(this));
+
+            $.getJSON('/api/room/'+this.room+'/ready', function(data) {
+                console.log(data);
+                this.ready = data;
             }.bind(this));
 
             socket.on('game-channel:App\\Events\\SitDown', function(data) {
@@ -157,6 +244,11 @@ HP: 3/3
                     this.seats['seat'+data.seat] = null;
                     return;
                 } 
+            }.bind(this));
+
+            socket.on('game-channel:App\\Events\\Ready', function(data) {
+                this.ready['ready'+data.seat] = true;
+                return;
             }.bind(this));
         }
     });

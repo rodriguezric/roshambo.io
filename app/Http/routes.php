@@ -35,6 +35,7 @@ Route::get('/api/room/{room}/health', 'HealthController@list');
 Route::post('/api/room', 'RoomController@create');
 Route::post('/api/room/sitdown', 'RoomController@SitDown');
 Route::post('/api/room/standup', 'RoomController@StandUp');
+Route::post('/api/room/ready', 'BattleController@SetReady');
 
 
 
