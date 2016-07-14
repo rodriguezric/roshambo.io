@@ -6,18 +6,24 @@ use App\Events\Event;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 
-class Attack extends Event
+class Attack extends Event implements ShouldBroadcast
 {
     use SerializesModels;
+
+    public $room;
+    public $seat;
+    public $attack;
 
     /**
      * Create a new event instance.
      *
      * @return void
      */
-    public function __construct()
+    public function __construct($room, $seat, $attack)
     {
-        //
+        $this->room = $room;
+        $this->seat = $seat;
+        $this->attack = $attack;
     }
 
     /**
@@ -27,6 +33,6 @@ class Attack extends Event
      */
     public function broadcastOn()
     {
-        return [];
+        return ['game-channel'];
     }
 }

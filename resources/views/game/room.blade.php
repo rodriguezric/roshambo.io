@@ -4,8 +4,11 @@
 <div class="container">
     <div class="row">
         <div class="col-md-10 col-md-offset-1">
-            <div class="panel panel-default">
-                {{ //Seats Section }}
+            <div 
+                v-show="!gameReady()"
+                class="panel panel-default"
+             >
+                <!-- Seats Section -->
                 <div class="panel-heading">Room: @{{room}}</div>
                 <div class="panel-body">
                     
@@ -45,9 +48,9 @@
 
             </div>
 
-            {{ //Game State }}
+            <!-- Game State -->
             <div    
-                v-show="bothsitting() && !gameready()"
+                v-show="bothSitting() && !gameReady()"
                 class="panel panel-default"
             >
                 <div class="panel-heading">Battle: @{{seats.seat1}} vs @{{seats.seat2}}</div>
@@ -81,7 +84,7 @@
 
             
             <div    
-                v-show="gameready()"
+                v-show="gameReady()"
                 class="panel panel-default"
             >
                 <div class="panel-heading">Battle: @{{seats.seat1}} vs @{{seats.seat2}}</div>
@@ -94,17 +97,35 @@ HP: 3/3
                         </pre>
                     </div>                    
                     <div class="col-md-4">
-                        <div class="text-center center-block">
+                        <div 
+                            v-show="!iAmAttacking()"
+                            class="text-center center-block"
+                        >
                             <h4>Choose your attack:</h4> 
-                            <button class="btn btn-lg btn-danger">
+                            <button 
+                                class="btn btn-lg btn-danger"
+                                v-on:click="clickAttack('fire')"
+                            >
                                 <span class="glyphicon glyphicon-fire"></span>
                             </button>
-                            <button class="btn btn-lg btn-primary">
+                            <button 
+                                class="btn btn-lg btn-primary"
+                                v-on:click="clickAttack('water')"
+                            >
                                 <span class="glyphicon glyphicon-tint"></span>
                             </button>
-                            <button class="btn btn-lg btn-success">
+                            <button 
+                                class="btn btn-lg btn-success"
+                                v-on:click="clickAttack('leaf')"
+                            >
                                 <span class="glyphicon glyphicon-leaf"></span>
                             </button>
+                            <h4 v-show="opponentIsAttacking()">
+                                Opponent is waiting for you!
+                            </h4>
+                        </div>
+                        <div v-show="iAmAttacking() && !opponentIsAttacking()">
+                            <h4>Waiting for Opponent.</h4>
                         </div>
                     </div>                    
                     <div class="col-md-4">
@@ -134,7 +155,8 @@ HP: 3/3
             room: '{{$room}}',
             user: '{{ Auth::user()->name }}',
             seats: [],
-            ready: []
+            ready: [],
+            attack: [],
         },
 
         methods: {
@@ -168,23 +190,30 @@ HP: 3/3
                 });
             },
             clickReady: function() {
-                var dbug =  {
-                        room: this.room,
-                        seat: this.getSeat()
-                };
-                console.log(dbug);
                 $.ajax({
                     type: "POST",
                     url: "/api/room/ready",
                     data: {
                         room: this.room,
-                        seat: this.getSeat()
+                        seat: this.getMySeatNumber()
+                    }
+                });
+            },
+
+            clickAttack: function(attack) {
+                $.ajax({
+                    type: "POST",
+                    url: "/api/room/attack",
+                    data: {
+                        room: this.room,
+                        seat: this.getMySeatNumber(),
+                        attack: attack
                     }
                 });
             },
 
             //Helper function for finding seat #
-            getSeat: function () {
+            getMySeatNumber: function () {
                 var seat = false;
 
                 if (this.seats.seat1 === this.user) {
@@ -197,29 +226,66 @@ HP: 3/3
 
                 return seat;
             },
+            getOpponentSeatNumber: function () {
+                if (this.getMySeatNumber() === 1) {
+                    return 2;
+                }
+                return 1
+            },
+            performAttacks: function () {
+                $.ajax({
+                    type: "POST",
+                    url: "/api/room/attack",
+                    data: {
+                        room: this.room,
+                        seat: 1,
+                        attack: null
+                    }
+                });
+
+                $.ajax({
+                    type: "POST",
+                    url: "/api/room/attack",
+                    data: {
+                        room: this.room,
+                        seat: 2,
+                        attack: null
+                    }
+                });
+            },
+
             iAmReady: function () {
-                return this.ready['ready'+this.getSeat()];
+                return this.ready['ready'+this.getMySeatNumber()];
             },
             opponentIsReady: function () {
-                opponent = 1;
-                if (opponent === this.getSeat()) {
-                    opponent = 2;
-                }
+                opponent = this.getOpponentSeatNumber();
                 return this.ready['ready'+opponent];
+            },
+
+            iAmAttacking: function () {
+                return this.attack['attack'+this.getMySeatNumber()];
+            },
+            opponentIsAttacking: function () {
+                opponent = this.getOpponentSeatNumber();
+                return this.attack['attack'+opponent];
             },
 
             /***********************************
              * Functions for determining state *
              ***********************************/
-            bothsitting: function () {
+            bothSitting: function () {
                 return this.seats.seat1 != null &&
                        this.seats.seat2 != null &&
                       (this.user === this.seats.seat1 ||
                        this.user === this.seats.seat2) 
             },
-            gameready: function () {
+            gameReady: function () {
                 return this.ready.ready1 && 
                        this.ready.ready2;
+            },
+            bothAttacking: function () {
+                return this.attack.attack1 && 
+                       this.attack.attack2;
             }
         },
         ready: function () {
@@ -231,8 +297,15 @@ HP: 3/3
             }.bind(this));
 
             $.getJSON('/api/room/'+this.room+'/ready', function(data) {
-                console.log(data);
                 this.ready = data;
+            }.bind(this));
+
+            $.getJSON('/api/room/'+this.room+'/attack', function(data) {
+                this.attack = data;
+
+                if (this.bothAttacking()) {
+                    
+                }
             }.bind(this));
 
             /***********
@@ -260,6 +333,17 @@ HP: 3/3
 
             socket.on('game-channel:App\\Events\\Ready', function(data) {
                 this.ready['ready'+data.seat] = true;
+                return;
+            }.bind(this));
+
+            socket.on('game-channel:App\\Events\\Attack', function(data) {
+                this.attack['attack'+data.seat] = data.attack;
+                console.log(data); 
+
+                if (this.bothAttacking()) {
+                    console.log(this.seats.seat1 + " uses " + this.attack.attack1 + " vs. " + this.seats.seat2 + " using " + this.attack.attack2 + "!");
+                    this.performAttacks();
+                }
                 return;
             }.bind(this));
         }

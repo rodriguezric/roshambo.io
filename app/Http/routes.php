@@ -36,6 +36,7 @@ Route::post('/api/room', 'RoomController@create');
 Route::post('/api/room/sitdown', 'RoomController@SitDown');
 Route::post('/api/room/standup', 'RoomController@StandUp');
 Route::post('/api/room/ready', 'BattleController@SetReady');
+Route::post('/api/room/attack', 'AttackController@attack');
 
 
 
