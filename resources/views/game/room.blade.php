@@ -93,7 +93,7 @@
                         <pre>
 @{{seats.seat1}}
 ****************
-HP: 3/3
+HP: @{{health.health1}}/3
                         </pre>
                     </div>                    
                     <div class="col-md-4">
@@ -132,7 +132,7 @@ HP: 3/3
                         <pre>
 @{{seats.seat2}}
 ****************
-HP: 3/3
+HP: @{{health.health2}}/3
                         </pre>
                     </div>                    
 
@@ -157,6 +157,7 @@ HP: 3/3
             seats: [],
             ready: [],
             attack: [],
+            health: [],
         },
 
         methods: {
@@ -300,6 +301,10 @@ HP: 3/3
                 this.ready = data;
             }.bind(this));
 
+            $.getJSON('/api/room/'+this.room+'/health', function(data) {
+                this.health = data;
+            }.bind(this));
+
             $.getJSON('/api/room/'+this.room+'/attack', function(data) {
                 this.attack = data;
 
@@ -343,6 +348,10 @@ HP: 3/3
                 if (this.bothAttacking()) {
                     console.log(this.seats.seat1 + " uses " + this.attack.attack1 + " vs. " + this.seats.seat2 + " using " + this.attack.attack2 + "!");
                     this.performAttacks();
+
+                    $.getJSON('/api/room/'+this.room+'/health', function(data) {
+                        this.health = data;
+                    }.bind(this));
                 }
                 return;
             }.bind(this));

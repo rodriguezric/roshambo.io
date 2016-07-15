@@ -17,6 +17,12 @@ class Health extends Model
         Redis::set($room.':'.$seat.':health', $health);
     }
 
+    public static function Damage($room, $seat)
+    {
+        $health = self::get($room, $seat) - 1;
+        self::set($room, $seat, $health); 
+    }
+
     public static function DeleteHealth($room, $seat)
     {
         Redis::del($room.':'.$seat.':health');

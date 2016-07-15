@@ -30,6 +30,11 @@ class Ready extends Event implements ShouldBroadcast
         $this->seat = $seat;
 
         Battle::SetReady($room, $seat);
+        $ready = Battle::GetReady($room);
+
+        if ($ready['ready1'] && $ready['ready2']) {
+            Battle::StartBattle($room);
+        }
     }
 
     /**
