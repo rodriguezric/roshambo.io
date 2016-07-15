@@ -5,7 +5,7 @@
     <div class="row">
         <div class="col-md-10 col-md-offset-1">
             <div 
-                v-show="!gameReady()"
+                v-show="!bothAreReady()"
                 class="panel panel-default"
              >
                 <!-- Seats Section -->
@@ -50,7 +50,7 @@
 
             <!-- Game State -->
             <div    
-                v-show="bothSitting() && !gameReady()"
+                v-show="bothSitting() && !bothAreReady()"
                 class="panel panel-default"
             >
                 <div class="panel-heading">Battle: @{{seats.seat1}} vs @{{seats.seat2}}</div>
@@ -82,24 +82,27 @@
                 </div>
             </div>
 
+
             
             <div    
-                v-show="gameReady()"
+                v-show="bothAreReady() && bothAreHealthy()"
                 class="panel panel-default"
             >
                 <div class="panel-heading">Battle: @{{seats.seat1}} vs @{{seats.seat2}}</div>
                 <div class="panel-body">
                     <div class="col-md-4">
-                        <pre>
-@{{seats.seat1}}
+                        <pre id="stats1">@{{seats.seat1}}
 ****************
-HP: @{{health.health1}}/3
-                        </pre>
+HP: @{{health.health1}}/3 </pre>
                     </div>                    
-                    <div class="col-md-4">
+                    <div 
+                        v-show="userIsPlaying()"
+                        class="col-md-4"
+                    >
                         <div 
                             v-show="!iAmAttacking()"
                             class="text-center center-block"
+                            style="padding-bottom: 1em"
                         >
                             <h4>Choose your attack:</h4> 
                             <button 
@@ -120,20 +123,61 @@ HP: @{{health.health1}}/3
                             >
                                 <span class="glyphicon glyphicon-leaf"></span>
                             </button>
-                            <h4 v-show="opponentIsAttacking()">
+                            <h4 v-if="opponentIsAttacking()">
                                 Opponent is waiting for you!
                             </h4>
                         </div>
-                        <div v-show="iAmAttacking() && !opponentIsAttacking()">
+                        <div 
+                            v-show="iAmAttacking() && !opponentIsAttacking()"
+                            class="text-center center-block"
+                        >
                             <h4>Waiting for Opponent.</h4>
                         </div>
                     </div>                    
                     <div class="col-md-4">
-                        <pre>
-@{{seats.seat2}}
+                        <pre id="stats2">@{{seats.seat2}}
 ****************
-HP: @{{health.health2}}/3
-                        </pre>
+HP: @{{health.health2}}/3</pre>
+                    </div>                    
+
+                </div>
+            </div>
+
+            <div    
+                v-show="bothAreReady() && bothAreHealthy()"
+                class="panel panel-default"
+            >
+                <div class="panel-heading">Battle Log</div>
+                <div class="panel-body">
+                    <div style="height:200px, overflow: scroll"
+                        <ul id="messages">
+                            <li v-for="entry in log">
+                                @{{entry.message}}
+                            </li>
+                        </ul>
+                     </div>
+                    <form action="">
+                        <input id="m" autocomplete="off" />
+                        <button class="btn">Send</button>
+                    </form>
+                </div>
+            </div>
+            
+            
+            <div    
+                v-show="someoneIsDead()"
+                class="panel panel-default"
+            >
+                <div class="panel-heading">Battle: @{{seats.seat1}} vs @{{seats.seat2}}</div>
+                <div class="panel-body">
+                    <div class="col-md-4">
+                    </div>                    
+                    <div class="col-md-4">
+                        <div class="text-center center-block">
+                            <h4> @{{ whoWon() }} Wins!</h4>
+                        </div>
+                    </div>                    
+                    <div class="col-md-4">
                     </div>                    
 
                 </div>
@@ -146,6 +190,14 @@ HP: @{{health.health2}}/3
 
 @section('scripts')
 <script>
+
+    function otherSeat (seat) {
+        if (seat === '1') {
+            return '2';
+        }
+        return '1';
+    }
+
     var socket = io('http://50.116.47.108:3000');
 
     var vue = new Vue({
@@ -158,6 +210,7 @@ HP: @{{health.health2}}/3
             ready: [],
             attack: [],
             health: [],
+            log: []
         },
 
         methods: {
@@ -270,6 +323,10 @@ HP: @{{health.health2}}/3
                 opponent = this.getOpponentSeatNumber();
                 return this.attack['attack'+opponent];
             },
+            userIsPlaying: function () {
+                return this.user === this.seats.seat1 ||
+                       this.user === this.seats.seat2;
+            },
 
             /***********************************
              * Functions for determining state *
@@ -280,13 +337,30 @@ HP: @{{health.health2}}/3
                       (this.user === this.seats.seat1 ||
                        this.user === this.seats.seat2) 
             },
-            gameReady: function () {
+            bothAreReady: function () {
                 return this.ready.ready1 && 
                        this.ready.ready2;
             },
             bothAttacking: function () {
                 return this.attack.attack1 && 
                        this.attack.attack2;
+            },
+            bothAreHealthy: function () {
+                return this.health.health1 > 0 && 
+                       this.health.health2 > 0;
+            },
+            someoneIsDead: function () {
+                return this.health.health1 === '0' ||
+                       this.health.health2 === '0';
+            },
+            whoWon: function () {
+                var winner = this.seats.seat1;
+
+                if (this.health.health1 === '0') {
+                    winner = this.seats.seat2;
+                }
+
+                return winner;
             }
         },
         ready: function () {
@@ -303,6 +377,8 @@ HP: @{{health.health2}}/3
 
             $.getJSON('/api/room/'+this.room+'/health', function(data) {
                 this.health = data;
+                console.log("Health 1: " +this.health.health1);
+                console.log("Health 2: " +this.health.health2);
             }.bind(this));
 
             $.getJSON('/api/room/'+this.room+'/attack', function(data) {
@@ -338,15 +414,60 @@ HP: @{{health.health2}}/3
 
             socket.on('game-channel:App\\Events\\Ready', function(data) {
                 this.ready['ready'+data.seat] = true;
+
+                if (this.bothAreReady()) {
+                    this.health = {
+                        'health1' : 3,
+                        'health2' : 3
+                    }
+                }
+                
                 return;
             }.bind(this));
 
             socket.on('game-channel:App\\Events\\Attack', function(data) {
                 this.attack['attack'+data.seat] = data.attack;
-                console.log(data); 
 
                 if (this.bothAttacking()) {
-                    console.log(this.seats.seat1 + " uses " + this.attack.attack1 + " vs. " + this.seats.seat2 + " using " + this.attack.attack2 + "!");
+                    var whoTakesDamage = {
+                        "firefire"   : 0,
+                        "firewater"  : 1,
+                        "fireleaf"   : 2,
+
+                        "waterfire"  : 2,
+                        "waterwater" : 0,
+                        "waterleaf"  : 1,
+
+                        "leaffire"   : 1,
+                        "leafwater"  : 2,
+                        "leafleaf"   : 0
+                    };
+
+                    this.log.push({ 'message' : this.seats.seat1 + " uses " + this.attack.attack1 + " vs. " + this.seats.seat2 + " using " + this.attack.attack2 + "!" });
+
+                    var concatAttack = this.attack.attack1+this.attack.attack2;
+                    var seatNumber = whoTakesDamage[concatAttack];
+
+                    if (seatNumber === 0) {
+                        $("#stats1").effect("shake", {
+                            direction : "up",
+                            distance : 10,
+                            times : 1
+                        });
+                        $("#stats2").effect("shake", {
+                            direction : "up",
+                            distance : 10,
+                            times : 1
+                        });
+                    }
+
+                    if (this.health["health"+seatNumber] === '1') {
+                        $("#stats"+seatNumber).effect("explode");
+                    } else {
+                        $("#stats"+seatNumber).effect("shake");
+                    }
+
+
                     this.performAttacks();
 
                     $.getJSON('/api/room/'+this.room+'/health', function(data) {
@@ -355,7 +476,17 @@ HP: @{{health.health2}}/3
                 }
                 return;
             }.bind(this));
+
+            socket.on('chat message', function (data) {
+                 this.log.push({ 'message' : data.user + ": " + data.message }); 
+            }.bind(this));
         }
+    });
+
+    $('form').submit(function(){
+        socket.emit('chat message', { message : $('#m').val(), user : '{{ Auth::user()->name }}' });
+        $('#m').val('');
+        return false;
     });
 
 </script>
